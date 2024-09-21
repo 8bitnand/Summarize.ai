@@ -39,8 +39,6 @@ Install the dependencies
 - uvicorn 
 - pydantic
 
-
-
 **Dataset Processing** 
 
 Using 🤗 api load the `cnn_dailymail` whcih is an English-language dataset containing news articles The current which can be used for machine reading and comprehension and abstractive question answering.
