@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 app = FastAPI()
-HUGGINGFACE_URL = ""
+HUGGINGFACE_URL = "nand-tmp/t5-small-cnn_dailymail"
 model = T5ForConditionalGeneration.from_pretrained(HUGGINGFACE_URL)
 tokenizer = T5Tokenizer.from_pretrained(HUGGINGFACE_URL)
 

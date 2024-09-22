@@ -38,6 +38,7 @@ Install the dependencies
 - fastapi 
 - uvicorn 
 - pydantic
+- sentencepiece
 
 **Dataset Processing** 
 
@@ -73,11 +74,36 @@ training_args = TrainingArguments(
     eval_steps=500,
     save_steps=1000, # save intermediate output so as to not lose trained model if runtime disconnected 
     logging_steps=100,
-    learning_rate=5e-5, # as the model is pretrained a smallet LR works better 
-    weight_decay=0.01, # reduce LR 
+    learning_rate=5e-5, # as the model is pretrained a small LR works better, as I was training This was too low, but due to resource limitations I cannot experiment with other values like 3.3e-4, 3.3e-3 
+    weight_decay=0.01, # reduce LR after steps
     save_total_limit=3,
     fp16=torch.cuda.is_available(), # used for faster training and save space in memory without using  32 bit 
 )
 
-trainer.train()
+trainer.train() # start training process 
+# use  trainer.train(resume_from_checkpoint=True) to load from the saved checkpoints  
 ```
+Model is automatically saved in the results/ folder and the related tensorboard graphs 
+
+Finaly save the trained model 
+```python
+trainer.save_model('/content/drive/MyDrive/Colab Notebooks/fireai/t5-small-cnn_dailymail')
+tokenizer.save_pretrained('/content/drive/MyDrive/Colab Notebooks/fireai/t5-small-cnn_dailymail')
+
+```
+
+Next step is to push the model to 🤗 My model is [here](https://huggingface.co/nand-tmp/t5-small-cnn_dailymail/) We will load the model in our api code from HF directly.
+
+#### API 
+```bash 
+fastapi dev api/main.py
+```
+I used github codespaces it lets you use and forward ports and here is the request response format 
+
+```bash
+curl -i -X POST -H 'Content-Type: application/json' -d '{"prompt":"T5 is an encoder-decoder model pre-trained on a multi-task mixture of unsupervised and supervised tasks and for which each task is converted into a text-to-text format. T5 works well on a variety of tasks out-of-the-box by prepending a different prefix to the input corresponding to each task, e.g.: for translation: translate English to German: …, summarize: …. For more information about which prefix to use, it is easiest to look into Appendix D of the paper ." }' http://127.0.0.1:8000/summarise
+```
+
+![API](extra/API.png)
+
+
